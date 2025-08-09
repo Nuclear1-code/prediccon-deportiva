@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>⚽ Anthony Deportes</title>
+  <style>
+    body {
+      background-color: #0b0f10;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #00ff99;
+      font-size: 28px;
+      text-shadow: 1px 1px 5px #00ffaa;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 15px;
+      background: linear-gradient(to bottom right, #1c1c1c, #0f2027);
+      box-shadow: 0 0 15px #00ff99;
+    }
+    input[type="number"] {
+      width: 28%;
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+      background: #1a1a1a;
+      color: white;
+      font-size: 14px;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin-top: 15px;
+      background-color: #00ff99;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 5px #00ffaa;
+    }
+    .resultado {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #141414;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    b, strong {
+      color: #00ffaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚽ Anthony Deportes</h1>
+    <p>Ingresa los datos de los equipos:</p>
+    <div>
+      <input type="number" id="winL" placeholder="Ganados Local">
+      <input type="number" id="drawL" placeholder="Empates Local">
+      <input type="number" id="lossL" placeholder="Perdidos Local"><br>
+      <input type="number" id="avgGoalsL" placeholder="Goles a favor Local">
+      <input type="number" id="avgAgainstL" placeholder="Goles contra Local"><br><br>
+
+      <input type="number" id="winV" placeholder="Ganados Visitante">
+      <input type="number" id="drawV" placeholder="Empates Visitante">
+      <input type="number" id="lossV" placeholder="Perdidos Visitante"><br>
+      <input type="number" id="avgGoalsV" placeholder="Goles a favor Visitante">
+      <input type="number" id="avgAgainstV" placeholder="Goles contra Visitante"><br>
+
+      <button class="btn" onclick="predecir()">📊 Obtener Predicción</button>
+    </div>
+    <div class="resultado" id="resultadoFinal"></div>
+  </div>
+
+  <script src="analisis-v9.js"></script>
+  <script>
+    function predecir() {
+      const data = {
+        winL: parseFloat(document.getElementById("winL").value),
+        drawL: parseFloat(document.getElementById("drawL").value),
+        lossL: parseFloat(document.getElementById("lossL").value),
+        avgGoalsL: parseFloat(document.getElementById("avgGoalsL").value),
+        avgAgainstL: parseFloat(document.getElementById("avgAgainstL").value),
+        winV: parseFloat(document.getElementById("winV").value),
+        drawV: parseFloat(document.getElementById("drawV").value),
+        lossV: parseFloat(document.getElementById("lossV").value),
+        avgGoalsV: parseFloat(document.getElementById("avgGoalsV").value),
+        avgAgainstV: parseFloat(document.getElementById("avgAgainstV").value),
+      };
+
+      const r = calcularResultado(data);
+
+      const cruzLocal = (data.winL / (data.winL + data.drawL + data.lossL) + data.lossV / (data.winV + data.drawV + data.lossV)) / 2;
+      const cruzEmpate = (data.drawL / (data.winL + data.drawL + data.lossL) + data.drawV / (data.winV + data.drawV + data.lossV)) / 2;
+      const cruzVisita = (data.winV / (data.winV + data.drawV + data.lossV) + data.lossL / (data.winL + data.drawL + data.lossL)) / 2;
+
+      let html = `
+        ✅ <strong>Resultado más probable:</strong> ${r.unico}<br>
+        📊 <strong>Confianza:</strong> ${(r.confianza * 100).toFixed(1)}%<br>
+        🎯 <span style="color:#ff66cc"><strong>Promedio de Goles:</strong> ${r.promedioGoles}</span> | 💰 <span style="color:#ffcc00"><strong>Cuota Goles Estimada:</strong> ${r.cuotaGoles}</span><br><br>
+        <u>📊 <b>Análisis Cruzado:</b></u><br>
+        - % Local: ${(cruzLocal * 100).toFixed(1)}% | Cuota: ${(1 / cruzLocal).toFixed(2)}<br>
+        - % Empate: ${(cruzEmpate * 100).toFixed(1)}% | Cuota: ${(1 / cruzEmpate).toFixed(2)}<br>
+        - % Visita: ${(cruzVisita * 100).toFixed(1)}% | Cuota: ${(1 / cruzVisita).toFixed(2)}
+      `;
+      document.getElementById("resultadoFinal").innerHTML = html;
+    }
+  </script>
+</body>
+</html>
